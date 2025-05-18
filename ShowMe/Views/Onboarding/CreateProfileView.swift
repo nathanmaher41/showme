@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CreateProfileView: View {
     @State private var name = ""
-    @State private var age = ""
+    @State private var birthdate = Calendar.current.date(byAdding: .year, value: -18, to: Date()) ?? Date()
     @State private var bio = ""
     @State private var linkedSocials: [SocialPlatform: String] = [:]
 
@@ -20,16 +20,17 @@ struct CreateProfileView: View {
         let characterLimit = 300
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 ZStack(alignment: .topLeading) {
-                    // Background & border to match TextField
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color(.secondarySystemBackground))
-                        .frame(height: 100)
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+                        .background(Color(.systemGray6)) // matches other fields
+                        .cornerRadius(10)
+                        .frame(height: 120)
 
                     TextEditor(text: $bio)
+                        .frame(height: 120)
                         .padding(8)
-                        .frame(height: 100)
                         .background(Color.clear)
                         .onChange(of: bio) {
                             if bio.count > characterLimit {
@@ -40,13 +41,15 @@ struct CreateProfileView: View {
                     if bio.isEmpty {
                         Text("Bio (e.g. I love aliens & hiking)")
                             .foregroundColor(.gray)
-                            .padding(12)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 12)
                     }
                 }
 
                 Text("\(bio.count)/\(characterLimit) characters")
                     .font(.caption)
                     .foregroundColor(.gray)
+                    .padding(.leading, 4)
             }
         }
     }
@@ -64,8 +67,10 @@ struct CreateProfileView: View {
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(8)
 
-                TextField("Age", text: $age)
-                    .keyboardType(.numberPad)
+                DatePicker("Birthday", selection: $birthdate, displayedComponents: .date)
+                    .datePickerStyle(.compact) // 👈 Shows dropdown-style picker
+                    .labelsHidden() // hides the default label if you want
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(8)
@@ -91,15 +96,16 @@ struct CreateProfileView: View {
                 }
 
                 Button(action: {
-                    guard let ageInt = Int(age), ageInt >= 13 else {
-                        // Optionally show alert
+                    let ageComponents = Calendar.current.dateComponents([.year], from: birthdate, to: Date())
+                    guard let age = ageComponents.year, age >= 13 else {
                         print("🚫 Must be 13 or older")
                         return
                     }
 
+
                     let profile = UserProfile(
                         name: name,
-                        age: ageInt,
+                        birthdate: birthdate,
                         bio: bio,
                         linkedSocials: linkedSocials
                     )

@@ -6,10 +6,11 @@
 //
 
 // Models/UserProfile.swift
+import Foundation
 
 struct UserProfile {
     var name: String
-    var age: Int
+    var birthdate: Date
     var bio: String
     var linkedSocials: [SocialPlatform: String]
 }

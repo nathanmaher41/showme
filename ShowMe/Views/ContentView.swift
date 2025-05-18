@@ -10,7 +10,10 @@ import SwiftUI
 struct ContentView: View {
     @State private var isLoggedIn = false
     @State private var hasProfile = false
+    @State private var hasCreatedAlien = false
+
     @State private var userProfile: UserProfile?
+    @State private var alienName: String?
 
     var body: some View {
         if !isLoggedIn {
@@ -22,15 +25,18 @@ struct ContentView: View {
                 userProfile = profile
                 hasProfile = true
             }
+        } else if !hasCreatedAlien {
+            AlienCreationView(onComplete: { name in
+                alienName = name
+                hasCreatedAlien = true
+            })
         } else {
-            if let testImage = UIImage(named: "samplePhoto") {
-                AlienStudioView(photo: testImage)
-            } else {
-                Text("No test image found.")
-            }
+            MainTabView()
         }
     }
 }
+
+
 
 
 #Preview {
